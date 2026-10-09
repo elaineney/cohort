@@ -1,0 +1,24 @@
+{
+	"name": "cohort",
+	"description": "Clinical trial enrollment where patients prove biomarker eligibility in zero knowledge, built with Compact on Midnight.",
+	"version": "0.1.0",
+	"dependencies": {
+		"@midnight-ntwrk/compact-runtime": "0.20.0"
+	},
+	"devDependencies": {
+		"typescript": "5.x",
+		"vitest": "1.x",
+		"vite": "5.x",
+		"vite-plugin-wasm": "3.x",
+		"tsx": "4.x"
+	},
+	"scripts": {
+		"test": "vitest run --config vitest.config.ts",
+		"typecheck": "tsc -p tsconfig.json --noEmit && tsc --noEmit --skipLibCheck --strict --target es2022 --module esnext --moduleResolution bundler --lib es2022,dom,dom.iterable web/src/main.ts",
+		"demo": "node --import tsx scripts/demo.ts",
+		"dev": "vite web",
+		"build": "vite build web",
+		"build:web": "vite build web"
+	},
+	"private": true
+}

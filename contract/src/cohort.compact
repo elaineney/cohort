@@ -1,0 +1,203 @@
+// SPDX-License-Identifier: Apache-2.0
+// Cohort: Confidential Clinical Trial Recruitment & Biomarker Verification on Midnight.
+// Prove patient eligibility across genomic and physiological biomarkers with zero medical chart disclosures.
+
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+export enum TrialStatus { enrolling, active, completed, closed }
+export enum CandidateStatus { pending, accepted, confirmed }
+
+export struct PatientChart {
+  biomarkerLevel: Uint<16>;    // e.g. blood marker or CD4/viral load
+  conditionCode: Uint<32>;     // ICD/condition classification code
+  ageYears: Uint<16>;
+  stageSeverity: Uint<16>;     // 1 to 4 stage
+  priorTreatmentFail: Boolean;
+  validTimestamp: Uint<32>;
+}
+
+export struct TrialEligibility {
+  minBiomarker: Uint<16>;
+  maxBiomarker: Uint<16>;
+  requiredCondition: Uint<32>;
+  minAge: Uint<16>;
+  maxAge: Uint<16>;
+  minSeverity: Uint<16>;
+  requirePriorFail: Boolean;
+  referenceTimestamp: Uint<32>;
+}
+
+struct ChartCommitmentInput {
+  domain: Bytes<32>;
+  chart: PatientChart;
+  patient: Bytes<32>;
+  salt: Bytes<32>;
+}
+
+// ---------------------------------------------------------------------------
+// Ledger State
+// ---------------------------------------------------------------------------
+
+export sealed ledger sponsor: Bytes<32>;
+export ledger accreditedHospitals: Set<Bytes<32>>;
+export ledger patientRegistry: HistoricMerkleTree<16, Bytes<32>>;
+export ledger chartCount: Counter;
+export ledger trials: Map<Bytes<32>, TrialEligibility>;
+export ledger enrollments: Map<Bytes<32>, Map<Bytes<32>, CandidateStatus>>;
+export ledger candidateCount: Map<Bytes<32>, Counter>;
+export ledger acceptedCount: Map<Bytes<32>, Counter>;
+export ledger trialEntropySeed: Map<Bytes<32>, Bytes<32>>;
+
+// ---------------------------------------------------------------------------
+// Witnesses (Private Inputs)
+// ---------------------------------------------------------------------------
+
+witness privateKey(): Bytes<32>;
+witness patientChart(): PatientChart;
+witness chartSalt(): Bytes<32>;
+witness chartPath(commitment: Bytes<32>): MerkleTreePath<16, Bytes<32>>;
+
+// ---------------------------------------------------------------------------
+// Pure Circuits
+// ---------------------------------------------------------------------------
+
+export pure circuit sponsorKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "cohort:sponsor:v1"), sk]);
+}
+
+export pure circuit hospitalKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "cohort:hospital:v1"), sk]);
+}
+
+export pure circuit patientKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "cohort:patient:v1"), sk]);
+}
+
+export pure circuit enrollmentReceipt(sk: Bytes<32>, trialId: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([pad(32, "cohort:receipt:v1"), trialId, sk]);
+}
+
+export pure circuit cohortDrawTicket(seed: Bytes<32>, receipt: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([pad(32, "cohort:ticket:v1"), seed, receipt]);
+}
+
+export pure circuit chartCommitment(c: PatientChart, patient: Bytes<32>, salt: Bytes<32>): Bytes<32> {
+  return persistentHash<ChartCommitmentInput>(ChartCommitmentInput {
+    domain: pad(32, "cohort:chart:v1"),
+    chart: c,
+    patient: patient,
+    salt: salt
+  });
+}
+
+export pure circuit satisfiesTrialCriteria(c: PatientChart, req: TrialEligibility): Boolean {
+  const bioOk = (req.minBiomarker == 0 || c.biomarkerLevel >= req.minBiomarker) &&
+                (req.maxBiomarker == 0 || c.biomarkerLevel <= req.maxBiomarker);
+  const conditionOk = req.requiredCondition == 0 || c.conditionCode == req.requiredCondition;
+  const ageOk = (req.minAge == 0 || c.ageYears >= req.minAge) &&
+                (req.maxAge == 0 || c.ageYears <= req.maxAge);
+  const severityOk = c.stageSeverity >= req.minSeverity;
+  const failOk = !req.requirePriorFail || c.priorTreatmentFail;
+  const validOk = c.validTimestamp >= req.referenceTimestamp;
+
+  return bioOk && conditionOk && ageOk && severityOk && failOk && validOk;
+}
+
+// ---------------------------------------------------------------------------
+// State Transition Circuits
+// ---------------------------------------------------------------------------
+
+constructor() {
+  sponsor = disclose(sponsorKey(privateKey()));
+}
+
+export circuit registerHospital(hospitalPublic: Bytes<32>): [] {
+  assert(disclose(sponsorKey(privateKey()) == sponsor), "Only sponsor can register accredited hospitals");
+  accreditedHospitals.insert(disclose(hospitalPublic));
+}
+
+export circuit registerPatientChart(commitment: Bytes<32>): [] {
+  const pKey = privateKey();
+  const hosp = disclose(hospitalKey(pKey));
+  const spon = disclose(sponsorKey(pKey));
+  assert(accreditedHospitals.member(hosp) || spon == sponsor,
+         "Only accredited hospital or sponsor can register charts");
+  patientRegistry.insert(disclose(commitment));
+  chartCount.increment(1);
+}
+
+export circuit createTrial(trialId: Bytes<32>, criteria: TrialEligibility): [] {
+  assert(disclose(sponsorKey(privateKey()) == sponsor), "Only sponsor can create trial");
+  const id = disclose(trialId);
+  const c = disclose(criteria);
+  assert(!trials.member(id), "Trial already registered");
+  trials.insert(id, c);
+  enrollments.insert(id, default<Map<Bytes<32>, CandidateStatus>>);
+  candidateCount.insert(id, default<Counter>);
+  acceptedCount.insert(id, default<Counter>);
+}
+
+export circuit applyForTrial(trialId: Bytes<32>): Bytes<32> {
+  const id = disclose(trialId);
+  assert(trials.member(id), "Trial not found");
+  const criteria = trials.lookup(id);
+
+  const sk = privateKey();
+  const chart = patientChart();
+  const commitment = chartCommitment(chart, patientKey(sk), chartSalt());
+  const path = chartPath(commitment);
+
+  assert(disclose(path.leaf == commitment), "Merkle path does not match chart commitment");
+  assert(patientRegistry.checkRoot(disclose(merkleTreePathRoot<16, Bytes<32>>(path))),
+         "Patient chart was not certified by accredited network hospital");
+  assert(disclose(satisfiesTrialCriteria(chart, criteria)), "Patient does not meet clinical biomarker criteria");
+
+  const receipt = disclose(enrollmentReceipt(sk, id));
+  assert(!enrollments.lookup(id).member(receipt), "Already applied for trial");
+
+  enrollments.lookup(id).insert(receipt, CandidateStatus.pending);
+  candidateCount.lookup(id).increment(1);
+  return receipt;
+}
+
+export circuit closeRecruitment(trialId: Bytes<32>, entropySeed: Bytes<32>): [] {
+  assert(disclose(sponsorKey(privateKey()) == sponsor), "Only sponsor can close recruitment");
+  const id = disclose(trialId);
+  assert(trials.member(id), "Trial not found");
+  trialEntropySeed.insert(id, disclose(entropySeed));
+}
+
+export circuit generateCohortDrawTicket(trialId: Bytes<32>): Bytes<32> {
+  const id = disclose(trialId);
+  assert(trials.member(id), "Trial not found");
+  assert(trialEntropySeed.member(id), "Recruitment not yet closed with entropy seed");
+  const seed = trialEntropySeed.lookup(id);
+  const receipt = enrollmentReceipt(privateKey(), id);
+  return disclose(cohortDrawTicket(seed, receipt));
+}
+
+export circuit acceptCandidate(trialId: Bytes<32>, receipt: Bytes<32>): [] {
+  assert(disclose(sponsorKey(privateKey()) == sponsor), "Only sponsor can accept candidate");
+  const id = disclose(trialId);
+  const r = disclose(receipt);
+  assert(trials.member(id), "Trial not found");
+  assert(enrollments.lookup(id).member(r), "Receipt not found");
+  assert(enrollments.lookup(id).lookup(r) == CandidateStatus.pending, "Candidate not in pending review");
+
+  enrollments.lookup(id).insert(r, CandidateStatus.accepted);
+  acceptedCount.lookup(id).increment(1);
+}
+
+export circuit confirmParticipation(trialId: Bytes<32>): Bytes<32> {
+  const id = disclose(trialId);
+  assert(trials.member(id), "Trial not found");
+
+  const receipt = disclose(enrollmentReceipt(privateKey(), id));
+  assert(enrollments.lookup(id).member(receipt), "No application for candidate");
+  assert(enrollments.lookup(id).lookup(receipt) == CandidateStatus.accepted, "Candidate not accepted");
+
+  enrollments.lookup(id).insert(receipt, CandidateStatus.confirmed);
+  return receipt;
+}

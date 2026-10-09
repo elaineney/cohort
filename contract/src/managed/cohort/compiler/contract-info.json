@@ -1,0 +1,847 @@
+{
+  "compiler-version": "0.35.0",
+  "compiler-commit": "debb05f9414b9d1e176741c2be289bb32233f0fc",
+  "language-version": "0.27.0",
+  "runtime-version": "0.20.0",
+  "circuits": [
+    {
+      "name": "sponsorKey",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "sk",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "hospitalKey",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "sk",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "patientKey",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "sk",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "enrollmentReceipt",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "sk",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "cohortDrawTicket",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "seed",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "receipt",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "chartCommitment",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "c",
+          "type": {
+            "type-name": "Struct",
+            "name": "PatientChart",
+            "elements": [
+              {
+                "name": "biomarkerLevel",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "conditionCode",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              },
+              {
+                "name": "ageYears",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "stageSeverity",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "priorTreatmentFail",
+                "type": {
+                  "type-name": "Boolean"
+                }
+              },
+              {
+                "name": "validTimestamp",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "patient",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "salt",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "satisfiesTrialCriteria",
+      "pure": true,
+      "proof": false,
+      "arguments": [
+        {
+          "name": "c",
+          "type": {
+            "type-name": "Struct",
+            "name": "PatientChart",
+            "elements": [
+              {
+                "name": "biomarkerLevel",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "conditionCode",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              },
+              {
+                "name": "ageYears",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "stageSeverity",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "priorTreatmentFail",
+                "type": {
+                  "type-name": "Boolean"
+                }
+              },
+              {
+                "name": "validTimestamp",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "req",
+          "type": {
+            "type-name": "Struct",
+            "name": "TrialEligibility",
+            "elements": [
+              {
+                "name": "minBiomarker",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "maxBiomarker",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "requiredCondition",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              },
+              {
+                "name": "minAge",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "maxAge",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "minSeverity",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "requirePriorFail",
+                "type": {
+                  "type-name": "Boolean"
+                }
+              },
+              {
+                "name": "referenceTimestamp",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Boolean"
+      }
+    },
+    {
+      "name": "registerHospital",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "hospitalPublic",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "registerPatientChart",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "commitment",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "createTrial",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "criteria",
+          "type": {
+            "type-name": "Struct",
+            "name": "TrialEligibility",
+            "elements": [
+              {
+                "name": "minBiomarker",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "maxBiomarker",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "requiredCondition",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              },
+              {
+                "name": "minAge",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "maxAge",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "minSeverity",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 65535
+                }
+              },
+              {
+                "name": "requirePriorFail",
+                "type": {
+                  "type-name": "Boolean"
+                }
+              },
+              {
+                "name": "referenceTimestamp",
+                "type": {
+                  "type-name": "Uint",
+                  "maxval": 4294967295
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "applyForTrial",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "closeRecruitment",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "entropySeed",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "generateCohortDrawTicket",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "acceptCandidate",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "receipt",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "confirmParticipation",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "trialId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    }
+  ],
+  "witnesses": [
+    {
+      "name": "privateKey",
+      "arguments": [
+      ],
+      "result type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "patientChart",
+      "arguments": [
+      ],
+      "result type": {
+        "type-name": "Struct",
+        "name": "PatientChart",
+        "elements": [
+          {
+            "name": "biomarkerLevel",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "conditionCode",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 4294967295
+            }
+          },
+          {
+            "name": "ageYears",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "stageSeverity",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "priorTreatmentFail",
+            "type": {
+              "type-name": "Boolean"
+            }
+          },
+          {
+            "name": "validTimestamp",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 4294967295
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "chartSalt",
+      "arguments": [
+      ],
+      "result type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "chartPath",
+      "arguments": [
+        {
+          "name": "commitment",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result type": {
+        "type-name": "Struct",
+        "name": "MerkleTreePath",
+        "elements": [
+          {
+            "name": "leaf",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          },
+          {
+            "name": "path",
+            "type": {
+              "type-name": "Vector",
+              "length": 16,
+              "type": {
+                "type-name": "Struct",
+                "name": "MerkleTreePathEntry",
+                "elements": [
+                  {
+                    "name": "sibling",
+                    "type": {
+                      "type-name": "Struct",
+                      "name": "MerkleTreeDigest",
+                      "elements": [
+                        {
+                          "name": "field",
+                          "type": {
+                            "type-name": "Field"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "goes_left",
+                    "type": {
+                      "type-name": "Boolean"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [
+  ],
+  "ledger": [
+    {
+      "name": "sponsor",
+      "index": 0,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "accreditedHospitals",
+      "index": 1,
+      "exported": true,
+      "storage": "Set",
+      "type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "patientRegistry",
+      "index": 2,
+      "exported": true,
+      "storage": "HistoricMerkleTree",
+      "depth": 16,
+      "type": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    },
+    {
+      "name": "chartCount",
+      "index": 3,
+      "exported": true,
+      "storage": "Counter"
+    },
+    {
+      "name": "trials",
+      "index": 4,
+      "exported": true,
+      "storage": "Map",
+      "key": {
+        "type-name": "Bytes",
+        "length": 32
+      },
+      "value": {
+        "type-name": "Struct",
+        "name": "TrialEligibility",
+        "elements": [
+          {
+            "name": "minBiomarker",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "maxBiomarker",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "requiredCondition",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 4294967295
+            }
+          },
+          {
+            "name": "minAge",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "maxAge",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "minSeverity",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 65535
+            }
+          },
+          {
+            "name": "requirePriorFail",
+            "type": {
+              "type-name": "Boolean"
+            }
+          },
+          {
+            "name": "referenceTimestamp",
+            "type": {
+              "type-name": "Uint",
+              "maxval": 4294967295
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "enrollments",
+      "index": 5,
+      "exported": true,
+      "storage": "Map",
+      "key": {
+        "type-name": "Bytes",
+        "length": 32
+      },
+      "value": {
+        "type-name": "Map",
+        "key": {
+          "type-name": "Bytes",
+          "length": 32
+        },
+        "value": {
+          "type-name": "Enum",
+          "name": "CandidateStatus",
+          "elements": [
+            "pending",
+            "accepted",
+            "confirmed"
+          ]
+        }
+      }
+    },
+    {
+      "name": "candidateCount",
+      "index": 6,
+      "exported": true,
+      "storage": "Map",
+      "key": {
+        "type-name": "Bytes",
+        "length": 32
+      },
+      "value": {
+        "type-name": "Counter"
+      }
+    },
+    {
+      "name": "acceptedCount",
+      "index": 7,
+      "exported": true,
+      "storage": "Map",
+      "key": {
+        "type-name": "Bytes",
+        "length": 32
+      },
+      "value": {
+        "type-name": "Counter"
+      }
+    },
+    {
+      "name": "trialEntropySeed",
+      "index": 8,
+      "exported": true,
+      "storage": "Map",
+      "key": {
+        "type-name": "Bytes",
+        "length": 32
+      },
+      "value": {
+        "type-name": "Bytes",
+        "length": 32
+      }
+    }
+  ]
+}

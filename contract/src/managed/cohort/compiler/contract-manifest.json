@@ -1,0 +1,76 @@
+{
+  "manifest-version": "1",
+  "compiler-version": "0.35.0",
+  "compiler-commit": "debb05f9414b9d1e176741c2be289bb32233f0fc",
+  "language-version": "0.27.0",
+  "runtime-version": "0.20.0",
+  "compiler": {
+    "type": "directory",
+    "contract-info.json": {
+      "type": "file",
+      "size": 18451,
+      "hash": "10c422944cf52d7b79120055f1f6d8f61b895f78e68cd86a8cdbd4af28aaf4b8"
+    }
+  },
+  "contract": {
+    "type": "directory",
+    "index.d.ts": {
+      "type": "file",
+      "size": 10436,
+      "hash": "b4d727b6645f7c51e6aecdef517d40dd9cdbc579fdf93fb007a694576209ee70"
+    },
+    "index.js": {
+      "type": "file",
+      "size": 212389,
+      "hash": "94985478f4a4ca4b6b0a6646fe110136d8bd58d46f33e69f43dce5eae9cd7b70"
+    },
+    "index.js.map": {
+      "type": "file",
+      "size": 7627,
+      "hash": "fd5d5a49b7361dfe1d05950d68eef328dd256a9d0a0561a5de6d74569485c436"
+    }
+  },
+  "zkir": {
+    "type": "directory",
+    "acceptCandidate.zkir": {
+      "type": "file",
+      "size": 7654,
+      "hash": "d7cb9bcbc7ecb965e3739e6ec2f66e8315bfac1fe87eb2a3dc09d12f0b42ecab"
+    },
+    "applyForTrial.zkir": {
+      "type": "file",
+      "size": 18099,
+      "hash": "bdffef759a06ad1bbc5c1a59bc4be1837ffc84e41e53104875869075fa933cbf"
+    },
+    "closeRecruitment.zkir": {
+      "type": "file",
+      "size": 4383,
+      "hash": "9760fa77f00986d6e47515d740f2f7c4769b2895a732ee9b38f6379f31e4d177"
+    },
+    "confirmParticipation.zkir": {
+      "type": "file",
+      "size": 6120,
+      "hash": "d132be8e488ff947b2bb16942c3692136d519f8683133ec0ddaea2fdd078d76e"
+    },
+    "createTrial.zkir": {
+      "type": "file",
+      "size": 8498,
+      "hash": "3d2ebee88cf0555c2c9ac007590930530119956daa9a3d50db3a3a64ccd07b8d"
+    },
+    "generateCohortDrawTicket.zkir": {
+      "type": "file",
+      "size": 4674,
+      "hash": "519d7a52196fc371c7ac14bc769ac09a6f53767998d862848acf955048d7969f"
+    },
+    "registerHospital.zkir": {
+      "type": "file",
+      "size": 2881,
+      "hash": "ff970d29718248c313a3fd652b91d6e49b052c6e3c45ec915a1f56ded5f1950a"
+    },
+    "registerPatientChart.zkir": {
+      "type": "file",
+      "size": 7568,
+      "hash": "6aab2bc016460edaa9358322ef8d0e78118f48eb7f121fe1c5bdca98840632d1"
+    }
+  }
+}
