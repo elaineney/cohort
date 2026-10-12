@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cohort / a private enrollment record</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+    <script>
+      (function () {
+        var root = document.documentElement;
+        function note(msg) {
+          root.dataset.fault = (root.dataset.fault ? root.dataset.fault + ' | ' : '') + String(msg);
+        }
+        window.addEventListener('error', function (e) { note(e.message || 'error'); });
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason;
+          note(r && r.message ? r.message : r);
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="folio">
+      <header class="masthead">
+        <p class="kicker">Protocol record &middot; Midnight</p>
+        <h1>Cohort</h1>
+        <p class="standfirst">
+          How a patient joins a clinical trial without handing their chart to the sponsor.
+          Five entries, read top to bottom. Each one names what the ledger learns and what stays in the wallet.
+        </p>
+      </header>
+
+      <ol class="ledger-steps" id="steps">
+        <li class="entry" data-step="1">
+          <button class="entry-head" type="button" aria-expanded="false">
+            <span class="entry-no">01</span>
+            <span class="entry-title">Hospital commits the chart</span>
+            <span class="entry-state" data-tag>pending</span>
+          </button>
+          <div class="entry-body">
+            <div class="prose">
+              <p>An accredited hospital hashes the patient's chart together with the patient key and a random salt, and appends only that leaf to a historic Merkle tree.</p>
+              <dl class="chart-sheet">
+                <dt>Biomarker</dt><dd><input id="f-bio" type="number" value="320" /></dd>
+                <dt>Condition code</dt><dd><input id="f-cond" type="number" value="704" /></dd>
+                <dt>Stage</dt><dd><input id="f-stage" type="number" value="3" /></dd>
+              </dl>
+              <button class="ink-btn" type="button" data-act="commit">Seal chart</button>
+              <code class="digest" data-out="commit">--</code>
+            </div>
+            <aside class="margin">
+              <p class="m-private">Private: chart values, patient key, salt.</p>
+              <p class="m-public">Public: one 32-byte leaf.</p>
+            </aside>
+          </div>
+        </li>
+
+        <li class="entry" data-step="2">
+          <button class="entry-head" type="button" aria-expanded="false">
+            <span class="entry-no">02</span>
+            <span class="entry-title">Trial criteria</span>
+            <span class="entry-state" data-tag>pending</span>
+          </button>
+          <div class="entry-body">
+            <div class="prose">
+              <p>The sponsor opens a trial with a biomarker window, a target condition, a minimum stage and an age band. The ruleset is checked inside the circuit, never against raw data on chain.</p>
+              <p class="criteria">Biomarker 250 to 500 &middot; condition 704 &middot; stage at least 2 &middot; ages 18 to 75</p>
+              <button class="ink-btn" type="button" data-act="trial">Publish criteria</button>
+              <code class="digest" data-out="trial">--</code>
+            </div>
+            <aside class="margin">
+              <p class="m-private">Private: nothing about any patient.</p>
+              <p class="m-public">Public: trial id and its rules.</p>
+            </aside>
+          </div>
+        </li>
+
+        <li class="entry" data-step="3">
+          <button class="entry-head" type="button" aria-expanded="false">
+            <span class="entry-no">03</span>
+            <span class="entry-title">Patient proves eligibility</span>
+            <span class="entry-state" data-tag>pending</span>
+          </button>
+          <div class="entry-body">
+            <div class="prose">
+              <p>From their own wallet the patient proves the sealed chart sits in the hospital tree and satisfies every rule. The ledger stores an anonymous receipt and a nullifier so the same chart cannot apply twice.</p>
+              <button class="ink-btn" type="button" data-act="prove">Prove eligibility</button>
+              <code class="digest" data-out="prove">--</code>
+            </div>
+            <aside class="margin">
+              <p class="m-private">Private: which leaf, which patient, every value.</p>
+              <p class="m-public">Public: receipt, nullifier, "rules held".</p>
+            </aside>
+          </div>
+        </li>
+
+        <li class="entry" data-step="4">
+          <button class="entry-head" type="button" aria-expanded="false">
+            <span class="entry-no">04</span>
+            <span class="entry-title">Blind draw</span>
+            <span class="entry-state" data-tag>pending</span>
+          </button>
+          <div class="entry-body">
+            <div class="prose">
+              <p>Recruitment closes with a sponsor entropy seed. Each applicant derives a draw ticket from that seed and their receipt, so selection is verifiable and no one can grind for a better ticket.</p>
+              <button class="ink-btn" type="button" data-act="draw">Draw ticket</button>
+              <code class="digest" data-out="draw">--</code>
+            </div>
+            <aside class="margin">
+              <p class="m-private">Private: the link between ticket and person.</p>
+              <p class="m-public">Public: seed and ticket.</p>
+            </aside>
+          </div>
+        </li>
+
+        <li class="entry" data-step="5">
+          <button class="entry-head" type="button" aria-expanded="false">
+            <span class="entry-no">05</span>
+            <span class="entry-title">Enrollment</span>
+            <span class="entry-state" data-tag>pending</span>
+          </button>
+          <div class="entry-body">
+            <div class="prose">
+              <p>The sponsor accepts a receipt; only the holder of the matching key can confirm. Status moves from applied to accepted to enrolled.</p>
+              <button class="ink-btn" type="button" data-act="enrol">Confirm participation</button>
+              <code class="digest" data-out="enrol">--</code>
+            </div>
+            <aside class="margin">
+              <p class="m-private">Private: identity until the clinic visit.</p>
+              <p class="m-public">Public: receipt status.</p>
+            </aside>
+          </div>
+        </li>
+      </ol>
+
+      <p class="caveat">Digests above are instant SHA-256 previews for reading along. They are not the contract's hash. The run below executes the compiled contract.</p>
+
+      <section class="transcript" aria-labelledby="run-h">
+        <div class="transcript-head">
+          <h2 id="run-h">Execute the compiled contract</h2>
+          <span class="run-state" id="run-state">idle</span>
+        </div>
+        <button class="ink-btn ink-btn--solid" type="button" id="run-contract">Run all five circuits in this page</button>
+        <pre class="transcript-out" id="run-out" aria-live="polite"></pre>
+      </section>
+
+      <footer class="colophon">Cohort &middot; Compact contract on Midnight &middot; Apache-2.0</footer>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
