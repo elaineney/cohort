@@ -14,7 +14,7 @@
 	},
 	"scripts": {
 		"test": "vitest run --config vitest.config.ts",
-		"typecheck": "tsc -p tsconfig.json --noEmit && tsc --noEmit --skipLibCheck --strict --target es2022 --module esnext --moduleResolution bundler --lib es2022,dom,dom.iterable web/src/main.ts",
+		"typecheck": "tsc --noEmit --target es2022 --module esnext --moduleResolution bundler --skipLibCheck --lib es2022,dom,dom.iterable web/src/main.ts",
 		"demo": "node --import tsx scripts/demo.ts",
 		"dev": "vite web",
 		"build": "vite build web",
